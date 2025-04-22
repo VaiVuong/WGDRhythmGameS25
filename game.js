@@ -1,7 +1,23 @@
-// Create our only scene called mainScene, in the game.js file
-class mainScene {
+var game; // Declare globally
 
-}
-new Phaser.Game({
+var gameSettings = {
+    playerSpeed: 200,
+};
 
-});
+var config = {
+    width: 1280,
+    height: 720,
+    backgroundColor: '#000000',
+    scene: [menuScene, levelScene],
+    pixelArt: true,
+    physics: {
+        default: "arcade",
+        arcade: {
+            debug: false
+        }
+    }
+};
+
+window.onload = function() {
+    game = new Phaser.Game(config); // Assign to global variable
+};
