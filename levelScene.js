@@ -3,90 +3,70 @@ class levelScene extends Phaser.Scene {
         super("levelScene");
     }
 
-    init() {
-        this.score = 0;
-        this.combo = 0;
-        this.multiplier = 1;
-    }
-
     preload() {
         this.load.image("background", "assets/images/ShopBG.png");
 
-        this.load.spritesheet("ship", "assets/spritesheets/ship.png", {
+        this.load.spritesheet("fruit", "assets/images/FruitPixel.png", {
             frameWidth: 16,
             frameHeight: 16
         });
 
-        this.load.spritesheet("ship2", "assets/spritesheets/ship2.png", {
-            frameWidth: 32,
-            frameHeight: 16
-        });
-
-        this.load.audio("miss", ["assets/sounds/beam.ogg", "assets/sounds/Miss.mp3"]);
-        this.load.audio("hit", ["assets/sounds/explosion.ogg", "assets/sounds/Smush.mp3"]);
+        this.load.audio("menuTune", ["assets/sounds/Chiptune.mp3"]);
+        this.load.audio("miss", ["assets/sounds/Miss.mp3"]);
+        this.load.audio("selection", ["assets/sounds/Selection.mp3"]);
+        this.load.audio("smush", ["assets/sounds/Smush.mp3"]);
     }
 
     create() {
-        // Background
-        this.background = this.add.image(0, 0, "background").setOrigin(0, 0);
+        // Background image
+        this.background = this.add.image(0, 0, "background");
+        this.background.setOrigin(0, 0);
         this.background.setDisplaySize(config.width, config.height);
 
-        // Score Text
-        this.scoreText = this.add.text(20, 20, "Score: 0", {
-            fontFamily: "Arial",
-            fontSize: "32px",
-            color: "#ffffff"
-        });
+        // Define 4 horizontal lane positions
+        this.lanes = [
+            config.width * 0.2,  // Left lane
+            config.width * 0.4,  // Second lane
+            config.width * 0.6,  // Third lane
+            config.width * 0.8   // Right lane
+        ];
 
-        // Multiplier Text
-        this.multiplierText = this.add.text(20, 60, "Multiplier: x1", {
-            fontFamily: "Arial",
-            fontSize: "28px",
-            color: "#ffcc00"
+        // Group to manage falling fruit sprites
+        this.fruitGroup = this.physics.add.group({
+            defaultKey: "fruit",
+            runChildUpdate: true
         });
+        
 
-        // Example music trigger
-        this.music = this.sound.add("music");
-        this.music.play({
-            volume: 0.5,
+        // Drop fruit every 800ms
+        this.time.addEvent({
+            delay: 800,
+            callback: this.spawnFruit,
+            callbackScope: this,
             loop: true
         });
-
-        // DEBUG: Simulate hits & misses
-        this.input.keyboard.on("keydown-H", () => {
-            this.updateScore();
-        });
-
-        this.input.keyboard.on("keydown-M", () => {
-            this.resetCombo();
-        });
     }
 
-    updateScore(points = 100) {
-        this.combo++;
+    spawnFruit() {
+        // Randomly pick a lane (index 0 to 3)
+        const laneIndex = Phaser.Math.Between(0, this.lanes.length - 1);
+        const x = this.lanes[laneIndex]; // Set X to the random lane
+        const y = 0; // Start above the screen
+        const frameIndex = Phaser.Math.Between(0, 3); // Random fruit from the spritesheet
 
-        // Set multiplier based on combo
-        if (this.combo >= 31) {
-            this.multiplier = 4;
-        } else if (this.combo >= 21) {
-            this.multiplier = 3;
-        } else if (this.combo >= 11) {
-            this.multiplier = 2;
-        } else {
-            this.multiplier = 1;
-        }
+        const fruit = this.fruitGroup.create(x, y, "fruit", frameIndex);
+        fruit.setScale(2);
+        fruit.setVelocityY(100);
 
-        // Update score
-        this.score += points * this.multiplier;
-
-        // Update text
-        this.scoreText.setText(`Score: ${this.score}`);
-        this.multiplierText.setText(`Multiplier: x${this.multiplier}`);
+        console.log("Spawned fruit at", x, "in lane", laneIndex, "frame", frameIndex);
     }
 
-    resetCombo() {
-        this.combo = 0;
-        this.multiplier = 1;
-        this.multiplierText.setText(`Multiplier: x1`);
+    update() {
+        // Destroy any fruit that has fallen off-screen
+        this.fruitGroup.children.each(fruit => {
+            if (fruit.y > config.height + 20) {
+                fruit.destroy();
+            }
+        }, this);
     }
 }
