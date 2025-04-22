@@ -52,7 +52,7 @@ class levelScene extends Phaser.Scene {
         const laneIndex = Phaser.Math.Between(0, this.lanes.length - 1);
         const x = this.lanes[laneIndex]; // Set X to the random lane
         const y = 0; // Start above the screen
-        const frameIndex = Phaser.Math.Between(0, 3); // Random fruit from the spritesheet
+        const frameIndex = laneIndex; // Random fruit from the spritesheet
 
         const fruit = this.fruitGroup.create(x, y, "fruit", frameIndex);
         fruit.setScale(2);
