@@ -29,27 +29,29 @@ class menuScene extends Phaser.Scene {
         this.background = this.add.image(0, 0, "background");
         this.background.setOrigin(0, 0);
         this.background.setDisplaySize(config.width, config.height);
-//
+        //
         //TitleCard
         this.title = this.add.image(0, 0, "title");
         this.title.setOrigin(-1, -.05);
         this.title.setDisplaySize(config.width / 3, config.height /3);
-//
+        //
         //StartButton
         this.start = this.add.image(0, 0, "start");
         this.start.setOrigin(-3, -2.6);
         this.start.setDisplaySize(config.width / 7, config.height / 7);
-//
+        this.start.setInteractive(); //makes button useable
+        //
         //QuitButton
         this.quit = this.add.image(0, 0, "quit");
         this.quit.setOrigin(-3, -3.5);
         this.quit.setDisplaySize(config.width / 7, config.height / 7);
-//
+        this.quit.setInteractive(); //makes button useable
+        //
         //Credits
         this.credit = this.add.image(0, 0, "credit");
         this.credit.setOrigin(-1, -5);
         this.credit.setDisplaySize(config.width / 3, config.height /6);
-//
+        //
 
         //MENU MUSIC
         this.menuTune = this.sound.add("menuTune");
@@ -62,7 +64,21 @@ class menuScene extends Phaser.Scene {
             seek: 0,
             delay: 0
         });
-        
-//
-}
+        //
+
+        //BUTTON BEHAVIOURS
+        //start button
+        this.start.on("pointerdown", () => {
+            this.sound.play("selection");
+            this.scene.start("levelScene");
+        })
+
+
+        //quit button
+        this.quit.on("pointerdown", () => {
+            this.sound.play("selection");
+            console.log("Quit clicked");
+            window.close();
+        })
+    }
 }
