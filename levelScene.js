@@ -82,7 +82,7 @@ class levelScene extends Phaser.Scene {
 
         this.anims.create({
             key: "attack",
-            frames: this.anims.generateFrameNumbers("badger_attack", { start: 0, end: 10 }),
+            frames: this.anims.generateFrameNumbers("badger_attack", { start: 0, end: 5 }),
             frameRate: 25,
             repeat: 0
         });
@@ -127,16 +127,16 @@ class levelScene extends Phaser.Scene {
     
             if (pointerX > this.prevMouseX) {
                 this.player.flipX = false;
-                this.player.setTexture("badger_move");
+                //this.player.setTexture("badger_move");
                 this.player.play("move", true);
                 this.player.body.setSize(100, 50).setOffset(130, 100);
             } else if (pointerX < this.prevMouseX) {
                 this.player.flipX = true;
-                this.player.setTexture("badger_move");
+                //this.player.setTexture("badger_move");
                 this.player.play("move", true);
                 this.player.body.setSize(100, 50).setOffset(130, 100);
             } else {
-                this.player.setTexture("badger_idle");
+                //this.player.setTexture("badger_idle");
                 this.player.play("idle", true);
                 this.player.body.setSize(100, 50).setOffset(0, 100);
             }
