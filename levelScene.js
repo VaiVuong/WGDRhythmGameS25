@@ -119,20 +119,12 @@ class levelScene extends Phaser.Scene {
     }
 
     update() {
-    // Destroy any fruit that has fallen off-screen
-        this.fruitGroup.children.each(fruit => {
-            if (fruit.y > config.height + 20) {
-                fruit.destroy();
-            }
-        }, this);
-
-
-        let pointerX = this.input.activePointer.x;
-
+        const pointerX = this.input.activePointer.x;
+    
+        // Move player only when not attacking
         if (!this.isAttacking) {
             this.player.x = pointerX;
-        
-            // Determine direction
+    
             if (pointerX > this.prevMouseX) {
                 this.player.flipX = false;
                 this.player.setTexture("badger_move");
@@ -145,20 +137,41 @@ class levelScene extends Phaser.Scene {
                 this.player.setTexture("badger_idle");
                 this.player.play("idle", true);
             }
-        
+    
             this.prevMouseX = pointerX;
         }
-    // Attack Handler
-    if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.isAttacking) {
-        this.isAttacking = true;
-        this.player.setTexture("badger_attack");
-        this.player.play("attack", true);
     
-        // Check for collisions while attacking
-        this.physics.overlap(this.player, this.fruitGroup, (player, fruit) => {
-            fruit.destroy();
-            this.sound.play("smush");
+        // Handle attack input
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.isAttacking) {
+            this.isAttacking = true;
+            this.player.setTexture("badger_attack");
+            this.player.play("attack", true);
+    
+            // Check for fruit collision while attacking
+            this.physics.overlap(this.player, this.fruitGroup, (player, fruit) => {
+                fruit.destroy();
+                this.sound.play("smush");
+            });
+        }
+    
+        // Fruit off-screen or missed check
+        this.fruitGroup.getChildren().forEach(fruit => {
+            // If the fruit reaches the lower border of the background
+            if (fruit.y > config.height - 50) {
+                // Play miss sound when the fruit hits the ground without colliding with the badger
+                this.sound.play("miss");
+                fruit.destroy();
+            }
         });
     }
-        }
+
+
+// Helper function to determine the closest lane (0, 1, 2, or 3)
+    getClosestLane(x) {
+        const laneWidth = config.width / 4; // Since we have 4 lanes
+        if (x < laneWidth) return 0; // Left lane
+        if (x < laneWidth * 2) return 1; // Second lane
+        if (x < laneWidth * 3) return 2; // Third lane
+        return 3; // Right lane
+    }
 }
