@@ -14,11 +14,11 @@ var config = {
         default: "arcade",
         arcade: {
             gravity: { y: 0},
-            debug: false
+            debug: true
         }
     }
 };
 
 window.onload = function() {
-    game = new Phaser.Game(config); // Assign to global variable
+    game = new Phaser.Game(config);
 };

@@ -78,6 +78,7 @@ class levelScene extends Phaser.Scene {
         this.player = this.physics.add.sprite(config.width / 2, config.height - 165, "badger_idle");
         this.player.setScale(2);
         this.player.play("idle");
+        this.player.body.setSize(100, 50).setOffset(0,100);
 
         this.anims.create({
             key: "attack",
@@ -95,7 +96,6 @@ class levelScene extends Phaser.Scene {
         this.player.on("animationcomplete", (anim) => {
             if (anim.key === "attack") {
                 this.isAttacking = false;
-                this.player.setTexture("badger_idle");
                 this.player.play("idle");
             }
         });
@@ -124,38 +124,36 @@ class levelScene extends Phaser.Scene {
         // Move player only when not attacking
         if (!this.isAttacking) {
             this.player.x = pointerX;
-        
+    
             if (pointerX > this.prevMouseX) {
                 this.player.flipX = false;
                 this.player.setTexture("badger_move");
                 this.player.play("move", true);
+                this.player.body.setSize(100, 50).setOffset(130, 100);
             } else if (pointerX < this.prevMouseX) {
                 this.player.flipX = true;
                 this.player.setTexture("badger_move");
                 this.player.play("move", true);
+                this.player.body.setSize(100, 50).setOffset(130, 100);
             } else {
                 this.player.setTexture("badger_idle");
                 this.player.play("idle", true);
+                this.player.body.setSize(100, 50).setOffset(0, 100);
             }
-        
+    
             this.prevMouseX = pointerX;
         }
-        
+    
         // Handle attack input
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.isAttacking = true;
             this.player.setTexture("badger_attack");
             this.player.play("attack", true);
+            this.player.body.setSize(100, 50).setOffset(130, 100);
         }
     
-        // Check for collision every frame during the attack
+        // Collision detection during attack
         if (this.isAttacking) {
-            // Check overlap while the player is attacking
-            this.physics.overlap(this.player, this.fruitGroup, (player, fruit) => {
-                // Destroy the fruit and play the smush sound on collision
-                fruit.destroy();
-                this.sound.play("smush");
-            });
             this.physics.overlap(this.player, this.fruitGroup, (player, fruit) => {
                 console.log('Fruit hit!', fruit);
                 fruit.destroy();
@@ -163,11 +161,9 @@ class levelScene extends Phaser.Scene {
             });
         }
     
-        // Fruit off-screen or missed check
+        // Check for fruit falling off-screen
         this.fruitGroup.getChildren().forEach(fruit => {
-            // If the fruit reaches the lower border of the background
             if (fruit.y > config.height - 50) {
-                // Play miss sound when the fruit hits the ground without colliding with the badger
                 this.sound.play("miss");
                 fruit.destroy();
             }
@@ -177,7 +173,7 @@ class levelScene extends Phaser.Scene {
 
 // Helper function to determine the closest lane (0, 1, 2, or 3)
     getClosestLane(x) {
-        const laneWidth = config.width / 4; // Since we have 4 lanes
+        const laneWidth = config.width / 4;
         if (x < laneWidth) return 0; // Left lane
         if (x < laneWidth * 2) return 1; // Second lane
         if (x < laneWidth * 3) return 2; // Third lane
