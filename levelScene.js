@@ -24,6 +24,10 @@ class levelScene extends Phaser.Scene {
             frameWidth: 384,
             frameHeight: 128
         });
+        this.load.spritesheet("badger_attack", "assets/images/badger_attack_B.png", {
+            frameWidth: 384,
+            frameHeight: 128
+        });
     }
 
     create() {
@@ -55,30 +59,50 @@ class levelScene extends Phaser.Scene {
             loop: true
         });
 
-
       // Badger animations
-    this.anims.create({
-        key: "idle",
-        frames: this.anims.generateFrameNumbers("badger_idle", { start: 0, end: 3 }),
-        frameRate: 4,
-        repeat: -1
-    });
+        this.anims.create({
+            key: "idle",
+            frames: this.anims.generateFrameNumbers("badger_idle", { start: 0, end: 3 }),
+            frameRate: 4,
+            repeat: -1
+        });
 
-    this.anims.create({
-        key: "move",
-        frames: this.anims.generateFrameNumbers("badger_move", { start: 0, end: 5 }),
-        frameRate: 10,
-        repeat: -1
-    });
+        this.anims.create({
+            key: "move",
+            frames: this.anims.generateFrameNumbers("badger_move", { start: 0, end: 5 }),
+            frameRate: 10,
+            repeat: -1
+        });
 
-    // Badger player sprite
-    this.player = this.add.sprite(config.width / 2, config.height - 165, "badger_idle");
-    this.player.setScale(2);
-    this.player.play("idle");
+        // Badger player sprite
+        this.player = this.add.sprite(config.width / 2, config.height - 165, "badger_idle");
+        this.player.setScale(2);
+        this.player.play("idle");
 
-    // Track previous X to determine direction
-    this.prevMouseX = this.player.x;
+        this.anims.create({
+            key: "attack",
+            frames: this.anims.generateFrameNumbers("badger_attack", { start: 0, end: 10 }),
+            frameRate: 25,
+            repeat: 0
+        });
+
+        // Track previous X to determine direction
+        this.prevMouseX = this.player.x;
+        // Space key input
+        this.isAttacking = false;
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.player.on("animationcomplete", (anim) => {
+            if (anim.key === "attack") {
+                this.isAttacking = false;
+                this.player.setTexture("badger_idle");
+                this.player.play("idle");
+            }
+        });
+
     }
+
+    
 
     spawnFruit() {
         // Randomly pick a lane (index 0 to 3)
@@ -95,7 +119,7 @@ class levelScene extends Phaser.Scene {
     }
 
     update() {
-        // Destroy any fruit that has fallen off-screen
+    // Destroy any fruit that has fallen off-screen
         this.fruitGroup.children.each(fruit => {
             if (fruit.y > config.height + 20) {
                 fruit.destroy();
@@ -105,21 +129,36 @@ class levelScene extends Phaser.Scene {
 
         let pointerX = this.input.activePointer.x;
 
-    // Only move left-right
-    this.player.x = pointerX;
-
-    // Determine movement direction
-    if (pointerX > this.prevMouseX) {
-        this.player.flipX = false; // Face right
-        this.player.play("move", true);
-    } else if (pointerX < this.prevMouseX) {
-        this.player.flipX = true; // Face left
-        this.player.play("move", true);
-    } else {
-        this.player.play("idle", true);
+        if (!this.isAttacking) {
+            this.player.x = pointerX;
+        
+            // Determine direction
+            if (pointerX > this.prevMouseX) {
+                this.player.flipX = false;
+                this.player.setTexture("badger_move");
+                this.player.play("move", true);
+            } else if (pointerX < this.prevMouseX) {
+                this.player.flipX = true;
+                this.player.setTexture("badger_move");
+                this.player.play("move", true);
+            } else {
+                this.player.setTexture("badger_idle");
+                this.player.play("idle", true);
+            }
+        
+            this.prevMouseX = pointerX;
+        }
+    // Attack Handler
+    if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && !this.isAttacking) {
+        this.isAttacking = true;
+        this.player.setTexture("badger_attack");
+        this.player.play("attack", true);
+    
+        // Check for collisions while attacking
+        this.physics.overlap(this.player, this.fruitGroup, (player, fruit) => {
+            fruit.destroy();
+            this.sound.play("smush");
+        });
     }
-
-// Update previous mouse X for next frame
-this.prevMouseX = pointerX;
-    }
+        }
 }
