@@ -15,6 +15,15 @@ class levelScene extends Phaser.Scene {
         this.load.audio("miss", ["assets/sounds/Miss.mp3"]);
         this.load.audio("selection", ["assets/sounds/Selection.mp3"]);
         this.load.audio("smush", ["assets/sounds/Smush.mp3"]);
+
+        this.load.spritesheet("badger_idle", "assets/images/badger_idle.png", {
+            frameWidth: 128,
+            frameHeight: 128
+        });
+        this.load.spritesheet("badger_move", "assets/images/badger_move.png", {
+            frameWidth: 384,
+            frameHeight: 128
+        });
     }
 
     create() {
@@ -45,6 +54,30 @@ class levelScene extends Phaser.Scene {
             callbackScope: this,
             loop: true
         });
+
+
+      // Badger animations
+    this.anims.create({
+        key: "idle",
+        frames: this.anims.generateFrameNumbers("badger_idle", { start: 0, end: 3 }),
+        frameRate: 4,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: "move",
+        frames: this.anims.generateFrameNumbers("badger_move", { start: 0, end: 5 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    // Badger player sprite
+    this.player = this.add.sprite(config.width / 2, config.height - 165, "badger_idle");
+    this.player.setScale(2);
+    this.player.play("idle");
+
+    // Track previous X to determine direction
+    this.prevMouseX = this.player.x;
     }
 
     spawnFruit() {
@@ -68,5 +101,25 @@ class levelScene extends Phaser.Scene {
                 fruit.destroy();
             }
         }, this);
+
+
+        let pointerX = this.input.activePointer.x;
+
+    // Only move left-right
+    this.player.x = pointerX;
+
+    // Determine movement direction
+    if (pointerX > this.prevMouseX) {
+        this.player.flipX = false; // Face right
+        this.player.play("move", true);
+    } else if (pointerX < this.prevMouseX) {
+        this.player.flipX = true; // Face left
+        this.player.play("move", true);
+    } else {
+        this.player.play("idle", true);
+    }
+
+// Update previous mouse X for next frame
+this.prevMouseX = pointerX;
     }
 }
