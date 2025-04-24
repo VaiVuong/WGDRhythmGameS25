@@ -1,3 +1,4 @@
+
 class levelScene extends Phaser.Scene {
     constructor() {
         super("levelScene");
@@ -11,7 +12,9 @@ class levelScene extends Phaser.Scene {
             frameHeight: 16
         });
 
-        this.load.audio("menuTune", ["assets/sounds/Chiptune.mp3"]);
+        this.load.binary('floweringMidi', 'assets/midi/Flowering.mid');
+
+        this.load.audio("flowering", ["assets/sounds/Flowering.mp3"]);
         this.load.audio("miss", ["assets/sounds/Miss.mp3"]);
         this.load.audio("selection", ["assets/sounds/Selection.mp3"]);
         this.load.audio("smush", ["assets/sounds/Smush.mp3"]);
@@ -35,6 +38,21 @@ class levelScene extends Phaser.Scene {
         this.background = this.add.image(0, 0, "background");
         this.background.setOrigin(0, 0);
         this.background.setDisplaySize(config.width, config.height);
+
+        // Stop all sounds when transitioning away from this scene
+        this.sound.stopAll(); // Stop any currently playing sounds
+
+
+        this.menuTune = this.sound.add("flowering");
+        this.menuTune.play({
+            mute: false,
+            volume: .5,
+            rate: 1,
+            loop: false,
+            detune: 0,
+            seek: 0,
+            delay: 0
+        });
 
         // Define 4 horizontal lane positions
         this.lanes = [
@@ -198,6 +216,8 @@ class levelScene extends Phaser.Scene {
 
         
     }
+
+    
 
 
 // Helper function to determine the closest lane (0, 1, 2, or 3)
