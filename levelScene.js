@@ -100,6 +100,27 @@ class levelScene extends Phaser.Scene {
             }
         });
 
+        //SCORING BOARD
+        this.score = 0;
+        this.combo = 0;
+        this.multiplier = 1;
+
+        this.scoreText = this.add.text(16, 16, 'Score: 0', {
+            fontSize: '24px',
+            fill: '#fff',
+            fontFamily: 'monospace',
+            stroke: '#000000',
+            strokeThickness: 4
+        })
+
+        this.multiplierText = this.add.text(16, 48, 'Multiplier: x1', {
+            fontSize: '24px',
+            fill: '#ff0',
+            fontFamily: 'monospace',
+            stroke: '#000000',
+            strokeThickness: 4
+        })
+
     }
 
     
@@ -157,6 +178,10 @@ class levelScene extends Phaser.Scene {
             this.physics.overlap(this.player, this.fruitGroup, (player, fruit) => {
                 console.log('Fruit hit!', fruit);
                 fruit.destroy();
+                this.combo++; //COMBO LOGIC
+                this.updateMultiplier();
+                this.score += 500 * this.multiplier;
+                this.scoreText.setText(`Score: ${this.score}`);
                 this.sound.play("smush");
             });
         }
@@ -164,6 +189,8 @@ class levelScene extends Phaser.Scene {
         // Check for fruit falling off-screen
         this.fruitGroup.getChildren().forEach(fruit => {
             if (fruit.y > config.height - 50) {
+                this.combo = 0; //combo reset on miss
+                this.updateMultiplier();
                 this.sound.play("miss");
                 fruit.destroy();
             }
@@ -178,5 +205,23 @@ class levelScene extends Phaser.Scene {
         if (x < laneWidth * 2) return 1; // Second lane
         if (x < laneWidth * 3) return 2; // Third lane
         return 3; // Right lane
+    }
+
+    //Multiplier Updater
+    updateMultiplier(){
+        if(this.combo >= 31){
+            this.multiplier = 4;
+        }
+        else if(this.combo >=21){
+            this.multiplier = 3;
+        }
+        else if(this.combo >= 11){
+            this.multiplier = 2;
+        }
+        else{
+            this.multiplier = 1;
+        }
+
+        this.multiplierText.setText(`Multiplier: x${this.multiplier}`);
     }
 }
