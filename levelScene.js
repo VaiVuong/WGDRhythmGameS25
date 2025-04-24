@@ -49,7 +49,7 @@ class levelScene extends Phaser.Scene {
             defaultKey: "fruit",
             runChildUpdate: true
         });
-        
+
 
         // Drop fruit every 800ms
         this.time.addEvent({
@@ -195,6 +195,8 @@ class levelScene extends Phaser.Scene {
                 fruit.destroy();
             }
         });
+
+        
     }
 
 
@@ -209,19 +211,34 @@ class levelScene extends Phaser.Scene {
 
     //Multiplier Updater
     updateMultiplier(){
+        let newMultiplier = 1;
         if(this.combo >= 31){
-            this.multiplier = 4;
+            this.newMultiplier = 4;
+            this.multiplier = 4
         }
         else if(this.combo >=21){
-            this.multiplier = 3;
+            this.newMultiplier = 3;
+            this.multiplier = 3
         }
         else if(this.combo >= 11){
-            this.multiplier = 2;
+            this.newMultiplier = 2;
+            this.multiplier = 2
         }
         else{
-            this.multiplier = 1;
+            this.newMultiplier = 1;
+            this.multiplier = 1
         }
+        if (newMultiplier !== this.multiplier){
+            this.multiplier = newMultiplier;
+            this.multiplierText.setText(`Multiplier: x${this.newMultiplier}`);
 
-        this.multiplierText.setText(`Multiplier: x${this.multiplier}`);
+            this.tweens.add({
+                targets: this.multiplierText,
+                scale: { from: 1.5, to: 1 },
+                duration: 200,
+                ease: "Bounce.easeout"
+            });
+        }
+        
     }
 }
