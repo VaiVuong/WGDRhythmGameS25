@@ -12,7 +12,8 @@ class levelScene extends Phaser.Scene {
             frameHeight: 16
         });
 
-        this.load.binary('floweringMidi', 'assets/midi/Flowering.mid');
+        this.load.json("midiData", "assets/midi/flowering.json");
+
 
         this.load.audio("flowering", ["assets/sounds/Flowering.mp3"]);
         this.load.audio("miss", ["assets/sounds/Miss.mp3"]);
@@ -61,6 +62,32 @@ class levelScene extends Phaser.Scene {
             config.width * 0.6,  // Third lane
             config.width * 0.8   // Right lane
         ];
+    // Load and parse the MIDI file
+// Load the pre-converted MIDI JSON
+const midi = this.cache.json.get("midiData");
+
+if (!midi || !midi.tracks) {
+    console.error("Failed to load MIDI tracks from JSON", midi);
+    return;
+}
+
+// Loop through notes and schedule them in Phaser
+midi.tracks.forEach(track => {
+    if (!track.notes) return;
+
+    track.notes.forEach(note => {
+        if (note.name && this.getLaneForNote(note.name) !== -1) {
+            const distanceToFall = config.height - 50;
+            const fallTime = distanceToFall / 200; // seconds
+            
+            const spawnTime = (note.time - fallTime) * 1000; // convert to ms
+            
+            this.time.delayedCall(spawnTime, () => {
+                this.spawnFruitFromMidi(note);
+            });
+        }
+    });
+});
 
         // Group to manage falling fruit sprites
         this.fruitGroup = this.physics.add.group({
@@ -101,7 +128,7 @@ class levelScene extends Phaser.Scene {
         this.anims.create({
             key: "attack",
             frames: this.anims.generateFrameNumbers("badger_attack", { start: 0, end: 5 }),
-            frameRate: 25,
+            frameRate: 35,
             repeat: 0
         });
 
@@ -143,7 +170,7 @@ class levelScene extends Phaser.Scene {
 
     
 
-    spawnFruit() {
+    /*spawnFruit() {
         // Randomly pick a lane (index 0 to 3)
         const laneIndex = Phaser.Math.Between(0, this.lanes.length - 1);
         const x = this.lanes[laneIndex]; // Set X to the random lane
@@ -155,6 +182,33 @@ class levelScene extends Phaser.Scene {
         fruit.setVelocityY(100);
 
         console.log("Spawned fruit at", x, "in lane", laneIndex, "frame", frameIndex);
+    } */
+
+    spawnFruitFromMidi(note) {
+        // Map the MIDI note to a specific lane
+        let laneIndex = this.getLaneForNote(note.name);
+    
+        if (laneIndex !== -1) {
+            const x = this.lanes[laneIndex]; // Set X to the random lane
+            const y = 0; // Start above the screen
+            const frameIndex = laneIndex; // Random fruit from the spritesheet
+    
+            const fruit = this.fruitGroup.create(x, y, "fruit", frameIndex);
+            fruit.setScale(2);
+            fruit.setVelocityY(200); // Speed at which the fruit falls
+    
+            console.log(`Spawned fruit at lane ${laneIndex} for note ${note.name}`);
+        }
+    }
+
+    getLaneForNote(noteName) {
+        switch (noteName) {
+            case "E4": return 0; // Left lane
+            case "F#4": return 1; // Second lane
+            case "G#4": return 2; // Third lane
+            case "A#4": return 3; // Right lane
+            default: return -1; // No lane
+        }
     }
 
     update() {
@@ -168,16 +222,16 @@ class levelScene extends Phaser.Scene {
                 this.player.flipX = false;
                 //this.player.setTexture("badger_move");
                 this.player.play("move", true);
-                this.player.body.setSize(100, 50).setOffset(130, 100);
+                this.player.body.setSize(100, 50).setOffset(130, 75);
             } else if (pointerX < this.prevMouseX) {
                 this.player.flipX = true;
                 //this.player.setTexture("badger_move");
                 this.player.play("move", true);
-                this.player.body.setSize(100, 50).setOffset(130, 100);
+                this.player.body.setSize(100, 50).setOffset(130, 75);
             } else {
                 //this.player.setTexture("badger_idle");
                 this.player.play("idle", true);
-                this.player.body.setSize(100, 50).setOffset(0, 100);
+                this.player.body.setSize(100, 50).setOffset(0, 75);
             }
     
             this.prevMouseX = pointerX;
@@ -188,7 +242,7 @@ class levelScene extends Phaser.Scene {
             this.isAttacking = true;
             this.player.setTexture("badger_attack");
             this.player.play("attack", true);
-            this.player.body.setSize(100, 50).setOffset(130, 100);
+            this.player.body.setSize(100, 50).setOffset(130, 75);
         }
     
         // Collision detection during attack
@@ -208,6 +262,7 @@ class levelScene extends Phaser.Scene {
         this.fruitGroup.getChildren().forEach(fruit => {
             if (fruit.y > config.height - 50) {
                 this.combo = 0; //combo reset on miss
+                this.multiplier = 1
                 this.updateMultiplier();
                 this.sound.play("miss");
                 fruit.destroy();
