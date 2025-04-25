@@ -4,6 +4,7 @@ class menuScene extends Phaser.Scene {
     }
 
     preload() {
+
         this.load.image("background", "assets/images/ShopBG.png");
         this.load.image("credit", "assets/images/Credits.png");
         this.load.image("title", "assets/images/BadgerFruitBash.png");
@@ -17,7 +18,7 @@ class menuScene extends Phaser.Scene {
 
     create() {
         this.sound.stopAll();
-        
+
         // Menu background
         this.background = this.add.image(0, 0, "background");
         this.background.setOrigin(0, 0);
