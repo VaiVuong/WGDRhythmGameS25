@@ -16,7 +16,10 @@ var config = {
             gravity: { y: 0},
             debug: true
         }
-    }
+    },
+    dom: {
+        createContainer: true
+    },
 };
 
 window.onload = function() {

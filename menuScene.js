@@ -16,6 +16,8 @@ class menuScene extends Phaser.Scene {
     }
 
     create() {
+        this.sound.stopAll();
+        
         // Menu background
         this.background = this.add.image(0, 0, "background");
         this.background.setOrigin(0, 0);

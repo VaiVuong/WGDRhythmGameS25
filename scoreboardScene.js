@@ -13,6 +13,8 @@ class scoreboardScene extends Phaser.Scene {
         this.load.image("submit", "assets/images/Submit.png");
         this.load.image("menu", "assets/images/Menu.png");
 
+
+
         this.load.audio("menuTune", ["assets/sounds/Chiptune.mp3"]);
         this.load.audio("selection", ["assets/sounds/Selection.mp3"]);
     }
@@ -29,21 +31,13 @@ class scoreboardScene extends Phaser.Scene {
         this.submit = this.add.image(0,0, "submit");
         this.submit.setOrigin(-1.5,-5);
         this.submit.setDisplaySize(config.width / 7, config.height / 8)
-        this.submit.setInteractive
+        this.submit.setInteractive();
 
         //Menu Button
         this.menu = this.add.image(0,0, "menu");
         this.menu.setOrigin(-1.5,-6.5);
         this.menu.setDisplaySize(config.width / 7, config.height / 8)
-        this.menu.setInteractive
-
-
-        this.nameInput = this.add.dom(400, 270, 'input',{
-            type: 'text',
-            fontSize: '24px',
-            padding: '5px',
-            width: '200px'
-        });
+        this.menu.setInteractive();
 
         this.menuTune = this.sound.add("menuTune");
         this.menuTune.play({
@@ -64,12 +58,17 @@ class scoreboardScene extends Phaser.Scene {
             this.sound.play("selection");
             this.scene.start("menuScene");
         })
+        
+        
     }
 
     update(){
 
     }
 
-
+    textAreaChanged() {
+        var text = this.formUtil.getTextAreaValue("area51");
+        console.log(text);
+    }
 
 }
