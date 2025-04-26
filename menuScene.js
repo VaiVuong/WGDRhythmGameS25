@@ -57,21 +57,13 @@ class menuScene extends Phaser.Scene {
             seek: 0,
             delay: 0
         });
-/*
+
         // Start button behavior
         this.start.on("pointerdown", () => {
             this.sound.play("selection");
             this.scene.start("levelScene");
         });
-*/
 
-this.start.on("pointerdown", () => {
-    this.sound.play("selection");
-    this.scene.start("scoreboardScene", {
-        score: 3000
-});
-
-});
         // Quit button behavior
         this.quit.on("pointerdown", () => {
             this.sound.play("selection");

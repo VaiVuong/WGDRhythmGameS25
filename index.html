@@ -4,15 +4,52 @@
     <meta charset="UTF-8">
     <title>Badger Fruit Bash</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.39/Tone.min.js"></script>
+    
     <script type="text/javascript" src="phaser.min.js"></script>
+
+
     <script type="text/javascript" src="menuScene.js"></script>
     <script type="text/javascript" src="levelScene.js"></script>
     <script type="text/javascript" src="scoreboardScene.js"></script>
     <script type="text/javascript" src="game.js"></script>
 </head>
 <body>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-analytics.js";
+        import {
+          getFirestore,
+          collection,
+          addDoc,
+          getDocs,
+          query,
+          orderBy,
+          limit
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+      
+        const firebaseConfig = {
+          apiKey: "AIzaSyBYCn_AvoVHAKRgLvMveIdg3YSrU305K8o",
+          authDomain: "badger-fruit-bash.firebaseapp.com",
+          projectId: "badger-fruit-bash",
+          storageBucket: "badger-fruit-bash.firebasestorage.app",
+          messagingSenderId: "27596746894",
+          appId: "1:27596746894:web:b10fa64b35b43c243d59df",
+          measurementId: "G-C8MGW9M38R"
+        };
+      
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getFirestore(app);
+      
+        // Make Firestore accessible globally
+        window.db = db;
+        window.addDoc = addDoc;
+        window.getDocs = getDocs;
+        window.collection = collection;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.limit = limit;
+      </script>
     <div id="gameContainer"></div>
-    
 </body>
 </html>
