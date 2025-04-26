@@ -18,6 +18,8 @@ class menuScene extends Phaser.Scene {
     create() {
         this.sound.stopAll();
 
+        this.sound.volume = 0.1;
+
         // Menu background
         this.background = this.add.image(0, 0, "background");
         this.background.setOrigin(0, 0);
@@ -59,7 +61,6 @@ class menuScene extends Phaser.Scene {
         this.menuTune = this.sound.add("menuTune");
         this.menuTune.play({
             mute: false,
-            volume: 0.75,
             rate: 1,
             loop: true,
             detune: 0,

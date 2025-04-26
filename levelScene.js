@@ -38,10 +38,12 @@ class levelScene extends Phaser.Scene {
         // Stop all sounds when transitioning away from this scene
         this.sound.stopAll(); // Stop any currently playing sounds
 
+        this.sound.volume = 0.1;
+
         this.menuTune = this.sound.add("flowering");
+        this.menuTune.volume = 0.5;
         this.menuTune.play({
             mute: false,
-            volume: .3,
             rate: 1, // change back to 1 after debug
             loop: false,
             detune: 0,
