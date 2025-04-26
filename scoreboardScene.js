@@ -21,6 +21,9 @@ class scoreboardScene extends Phaser.Scene {
     create() {
         this.sound.stopAll();
         
+        // Flag to track if score has been submitted
+        this.isScoreSubmitted = false;
+
         // Scoreboard Background
         this.scoreBackground = this.add.image(0, 0, "leaderBG");
         this.scoreBackground.setOrigin(0, 0);
@@ -55,7 +58,7 @@ class scoreboardScene extends Phaser.Scene {
             text: 'Enter your name',
             fontSize: '40px',
             background: 'transparent',
-            maxLength: 10,
+            maxLength: 8,
             color: '#000',
             border: '2px solid #fff',
             padding: 10,
@@ -71,15 +74,25 @@ class scoreboardScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         this.leaderText.text = "TEST TEST";
+        
         // Submit Button Click Handler
         this.submit.on("pointerdown", () => {
+            if (this.isScoreSubmitted) {
+                return; // Prevent further submissions if the score is already submitted
+            }
+
             this.sound.play("selection");
-    
+
             const playerName = this.inputText.text;
             const playerScore = this.finalScore;
-    
+
             // Call the function to submit the score
             this.submitScore(playerName, playerScore);
+
+            // Mark the score as submitted and disable the button
+            this.isScoreSubmitted = true;
+            this.submit.setAlpha(0.5);  // Make the button semi-transparent to show it's disabled
+            this.submit.setInteractive(false); // Disable interaction with the button
         });
     
         // Menu Button Click Handler
