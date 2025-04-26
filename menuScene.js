@@ -4,7 +4,6 @@ class menuScene extends Phaser.Scene {
     }
 
     preload() {
-
         this.load.image("background", "assets/images/ShopBG.png");
         this.load.image("credit", "assets/images/Credits.png");
         this.load.image("title", "assets/images/BadgerFruitBash.png");
@@ -70,7 +69,19 @@ class menuScene extends Phaser.Scene {
             console.log("Quit clicked");
             window.close();
         });
+
+        // Instructions
+        this.instructionsText = this.add.text(config.width / 2, config.height - 100, 
+            "Move your mouse to move, Press Space to smack the fruit!", 
+            {
+                fontSize: '40px',
+                color: '#fff',
+                align: 'center',
+                fontFamily: 'Arial',
+                stroke: '#000',
+                strokeThickness: 8
+            })
+            .setOrigin(0.5, 2)
+            .setPadding(10);
     }
-
-
 }
