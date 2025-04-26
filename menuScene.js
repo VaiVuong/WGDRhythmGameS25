@@ -28,6 +28,16 @@ class menuScene extends Phaser.Scene {
         this.title.setOrigin(-1, -.05);
         this.title.setDisplaySize(config.width / 3, config.height / 3);
 
+        // Animation tween for title
+        this.tweens.add({
+            targets: this.title,
+            y: this.title.y + 10,
+            yoyo: true,
+            duration: 1000,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
         // Start button
         this.start = this.add.image(0, 0, "start");
         this.start.setOrigin(-3, -2.6);
