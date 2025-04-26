@@ -20,6 +20,8 @@ class scoreboardScene extends Phaser.Scene {
 
     create() {
         this.sound.stopAll();
+
+        this.sound.volume = 0.1;
         
         // Flag to track if score has been submitted
         this.isScoreSubmitted = false;
@@ -42,9 +44,9 @@ class scoreboardScene extends Phaser.Scene {
         this.menu.setInteractive();
         
         this.menuTune = this.sound.add("menuTune");
+        this.menuTune.volume = 0.5;
         this.menuTune.play({
             mute: false,
-            volume: 0.75,
             rate: 1,
             loop: true,
             detune: 0,
