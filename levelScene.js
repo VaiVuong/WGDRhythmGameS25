@@ -10,7 +10,7 @@ class levelScene extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16
         });
-        this.load.json("midiData", "assets/midi/flowering.json");
+        this.load.json("midiData", "assets/midi/Flowering.json");
         this.load.audio("flowering", ["assets/sounds/Flowering.mp3"]);
         this.load.audio("miss", ["assets/sounds/Miss.mp3"]);
         this.load.audio("selection", ["assets/sounds/Selection.mp3"]);
@@ -222,7 +222,7 @@ class levelScene extends Phaser.Scene {
 
     update() {
         if (!this.player) return;
-        
+
         const pointerX = this.input.activePointer.x;
 
         // Move player only when not attacking
