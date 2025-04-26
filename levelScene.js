@@ -10,7 +10,7 @@ class levelScene extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16
         });
-        this.load.json("midiData", "assets/midi/flowering.json");
+        this.load.json("midiData", "assets/midi/Flowering.json");
         this.load.audio("flowering", ["assets/sounds/Flowering.mp3"]);
         this.load.audio("miss", ["assets/sounds/Miss.mp3"]);
         this.load.audio("selection", ["assets/sounds/Selection.mp3"]);
@@ -185,7 +185,44 @@ class levelScene extends Phaser.Scene {
         }
     }
 
+    
+
+    // Helper function to determine the closest lane (0, 1, 2, or 3)
+    getClosestLane(x) {
+        const laneWidth = config.width / 4;
+        if (x < laneWidth) return 0; // Left lane
+        if (x < laneWidth * 2) return 1; // Second lane
+        if (x < laneWidth * 3) return 2; // Third lane
+        return 3; // Right lane
+    }
+
+    // Multiplier Updater
+    updateMultiplier() {
+        let newMultiplier = 1;
+        if (this.combo >= 31) {
+            newMultiplier = 4;
+        } else if (this.combo >= 21) {
+            newMultiplier = 3;
+        } else if (this.combo >= 11) {
+            newMultiplier = 2;
+        }
+
+        if (newMultiplier !== this.multiplier) {
+            this.multiplier = newMultiplier;
+            this.multiplierText.setText(`Multiplier: x${newMultiplier}`);
+
+            this.tweens.add({
+                targets: this.multiplierText,
+                scale: { from: 1.5, to: 1 },
+                duration: 200,
+                ease: "Bounce.easeout"
+            });
+        }
+    }
+
     update() {
+        if (!this.player) return;
+
         const pointerX = this.input.activePointer.x;
 
         // Move player only when not attacking
@@ -242,38 +279,5 @@ class levelScene extends Phaser.Scene {
                 fruit.destroy();
             }
         });
-    }
-
-    // Helper function to determine the closest lane (0, 1, 2, or 3)
-    getClosestLane(x) {
-        const laneWidth = config.width / 4;
-        if (x < laneWidth) return 0; // Left lane
-        if (x < laneWidth * 2) return 1; // Second lane
-        if (x < laneWidth * 3) return 2; // Third lane
-        return 3; // Right lane
-    }
-
-    // Multiplier Updater
-    updateMultiplier() {
-        let newMultiplier = 1;
-        if (this.combo >= 31) {
-            newMultiplier = 4;
-        } else if (this.combo >= 21) {
-            newMultiplier = 3;
-        } else if (this.combo >= 11) {
-            newMultiplier = 2;
-        }
-
-        if (newMultiplier !== this.multiplier) {
-            this.multiplier = newMultiplier;
-            this.multiplierText.setText(`Multiplier: x${newMultiplier}`);
-
-            this.tweens.add({
-                targets: this.multiplierText,
-                scale: { from: 1.5, to: 1 },
-                duration: 200,
-                ease: "Bounce.easeout"
-            });
-        }
     }
 }
