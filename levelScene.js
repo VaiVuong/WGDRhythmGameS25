@@ -208,6 +208,9 @@ class levelScene extends Phaser.Scene {
         } else if (this.combo >= 11) {
             newMultiplier = 2;
         }
+        else {
+            newMultiplier = 1;
+        }
 
         if (newMultiplier !== this.multiplier) {
             this.multiplier = newMultiplier;
